@@ -1,0 +1,127 @@
+  Create Customers Table
+CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    CustomerName VARCHAR(255),
+    City VARCHAR(255)
+);
+
+  Create Orders Table
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    OrderDate DATE,
+    Amount DECIMAL(10, 2),
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+);
+
+  Insert some sample data into Customers
+INSERT INTO Customers (CustomerID, CustomerName, City) VALUES
+(1, 'Alice Smith', 'New York'),
+(2, 'Bob Johnson', 'Los Angeles'),
+(3, 'Charlie Brown', 'Chicago'),
+(4, 'David Lee', 'Houston');
+
+  Insert some sample data into Orders
+INSERT INTO Orders (OrderID, CustomerID, OrderDate, Amount) VALUES
+(101, 1, '2023-01-15', 150.00),
+(102, 2, '2023-01-20', 250.50),
+(103, 1, '2023-02-01', 75.20),
+(104, 3, '2023-02-10', 300.00),
+(105, 5, '2023-03-01', 120.00),   This order is for a non-existent customer to demonstrate LEFT/RIGHT/FULL joins
+(106, 2, '2023-03-05', 90.00);
+SELECT
+    C.CustomerID,
+    C.CustomerName,
+    O.OrderID,
+    O.OrderDate,
+    O.Amount
+FROM
+    Customers C
+INNER JOIN
+    Orders O ON C.CustomerID = O.CustomerID;
+SELECT
+    C.CustomerID,
+    C.CustomerName,
+    O.OrderID,
+    O.OrderDate,
+    O.Amount
+FROM
+    Customers C
+RIGHT JOIN
+    Orders O ON C.CustomerID = O.CustomerID;
+  SQLite equivalent of RIGHT JOIN
+SELECT
+    C.CustomerID,
+    C.CustomerName,
+    O.OrderID,
+    O.OrderDate,
+    O.Amount
+FROM
+    Orders O
+LEFT JOIN
+    Customers C ON C.CustomerID = O.CustomerID;
+SELECT
+C.CustomerID AS Customer_ID_from_Customers,   Alias for clarity
+C.CustomerName,
+O.CustomerID AS Customer_ID_from_Orders,   Alias for clarity
+O.OrderID,
+O.OrderDate,
+O.Amount
+FROM
+Customers C
+FULL OUTER JOIN
+Orders O ON C.CustomerID = O.CustomerID;
+
+  SQLite equivalent of FULL OUTER JOIN
+SELECT
+C.CustomerID,
+C.CustomerName,
+O.OrderID,
+O.OrderDate,
+O.Amount
+FROM
+Customers C
+LEFT JOIN
+Orders O ON C.CustomerID = O.CustomerID
+
+UNION ALL
+
+SELECT
+C.CustomerID,
+C.CustomerName,
+O.OrderID,
+O.OrderDate,
+O.Amount
+FROM
+Orders O
+LEFT JOIN
+Customers C ON C.CustomerID = O.CustomerID
+WHERE
+C.CustomerID IS NULL;   This condition ensures we only get the rows unique to the right table
+
+  SQLite equivalent of FULL OUTER JOIN
+SELECT
+C.CustomerID,
+C.CustomerName,
+O.OrderID,
+O.OrderDate,
+O.Amount
+FROM
+Customers C
+LEFT JOIN
+Orders O ON C.CustomerID = O.CustomerID
+
+UNION ALL
+
+SELECT
+C.CustomerID,
+C.CustomerName,
+O.OrderID,
+O.OrderDate,
+O.Amount
+FROM
+Orders O
+LEFT JOIN
+Customers C ON C.CustomerID = O.CustomerID
+WHERE
+C.CustomerID IS NULL;   This condition ensures we only get the rows unique to the right table
